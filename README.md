@@ -215,6 +215,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Network drive support
 - [ ] Plugin system
 
+## Community
+
+Join our [Discussions](https://github.com/username/file-cleaner-pro/discussions) to:
+- Ask questions
+- Share ideas
+- Get help
+- Show your projects
+- Connect with other users
+
 ---
 
 ⭐ Star us on GitHub if you find this project useful!
