@@ -1,0 +1,9 @@
+# .vscode/preview.yml
+autoOpen: false
+apps:
+  - port: 5000
+    run: 'python ./example.py'
+    root: ./example
+    name: Python Cloud Studio Demo
+    description: Python Cloud Studio Demo Project
+    autoOpen: false
