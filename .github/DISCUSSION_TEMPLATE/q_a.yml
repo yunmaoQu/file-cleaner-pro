@@ -1,0 +1,38 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for starting a Q&A discussion! Please fill out the information below.
+  
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What do you need help with?
+      placeholder: Describe your question in detail...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        - OS: [e.g. Windows 10]
+        - Python Version: [e.g. 3.8]
+        - App Version: [e.g. 1.0.0]
+      render: shell
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. See error
+    validations:
+      required: false
