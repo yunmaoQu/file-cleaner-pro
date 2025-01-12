@@ -7,9 +7,9 @@ file_cleaner/
 │   ├── __init__.py
 │   ├── core/
 │   │   ├── __init__.py
-│   │   ├── scanner.py          # 基础文件扫描器
-│   │   ├── threaded_scanner.py # 多线程扫描器
-│   │   ├── optimizer.py        # 文件优化器
+│   │   ├── scanner.py          
+│   │   ├── threaded_scanner.py 
+│   │   ├── optimizer.py        
 │   │   ├── advisor.py          # 文件管理建议
 │   │   ├── recovery.py         # 文件恢复功能
 │   │   └── backup.py           # 自动备份功能
