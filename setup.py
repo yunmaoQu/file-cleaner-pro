@@ -2,12 +2,10 @@ from setuptools import setup, find_packages
 import os
 
 def read_requirements(filename):
-    """读取requirements文件"""
     with open(filename) as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
 def read_file(filename):
-    """读取文件内容"""
     with open(filename) as f:
         return f.read()
 
