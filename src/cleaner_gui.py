@@ -1,7 +1,9 @@
+import os
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import math
 
 class CleanerGUI:
     def __init__(self, scanner, optimizer, advisor):
@@ -11,6 +13,7 @@ class CleanerGUI:
         self.window = tk.Tk()
         self.window.title("File Cleaner Assistant")
         self.window.geometry("800x600")
+        self.window.protocol("WM_DELETE_WINDOW", self.on_close)
         self.setup_ui()
         
     def setup_ui(self):
@@ -115,20 +118,29 @@ class CleanerGUI:
         # 显示重复文件
         for hash_value, duplicates in scan_results['duplicates'].items():
             for file_path in duplicates:
+                size = os.path.getsize(file_path)
+                if math.isnan(size):
+                    size = 0
                 self.tree.insert('', 'end', values=('Duplicate', file_path, 
-                                                  self.format_size(os.path.getsize(file_path)),
+                                                  self.format_size(size),
                                                   'Remove duplicate'))
         
         # 显示大文件
         for file_info in scan_results['large_files']:
+            size = file_info['size']
+            if math.isnan(size):
+                size = 0
             self.tree.insert('', 'end', values=('Large File', file_info['path'],
-                                              self.format_size(file_info['size']),
+                                              self.format_size(size),
                                               'Optimize'))
         
         # 显示旧文件
         for file_info in scan_results['old_files']:
+            size = os.path.getsize(file_info['path'])
+            if math.isnan(size):
+                size = 0
             self.tree.insert('', 'end', values=('Old File', file_info['path'],
-                                              self.format_size(os.path.getsize(file_info['path'])),
+                                              self.format_size(size),
                                               'Archive'))
     
     def format_size(self, size):
@@ -150,9 +162,13 @@ class CleanerGUI:
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
         
         # 文件类型分布饼图
-        type_sizes = {k: sum(os.path.getsize(f) for f in v) 
-                     for k, v in scan_results['classified_files'].items()}
-        ax1.pie(type_sizes.values(), labels=type_sizes.keys(), autopct='%1.1f%%')
+        type_sizes = {k: sum(os.path.getsize(f) for f in v) for k, v in scan_results['classified_files'].items()}
+        total = sum(type_sizes.values())
+        if total == 0 or any(math.isnan(v) for v in type_sizes.values()):
+            # 避免全为0或有NaN时绘图
+            ax1.text(0.5, 0.5, 'No Data', ha='center', va='center', fontsize=14)
+        else:
+            ax1.pie(type_sizes.values(), labels=type_sizes.keys(), autopct='%1.1f%%')
         ax1.set_title('File Type Distribution')
         
         # 文件大小柱状图
@@ -162,6 +178,8 @@ class CleanerGUI:
             sum(len(files) for files in scan_results['duplicates'].values()),
             len(scan_results['old_files'])
         ]
+        # NaN 检查
+        file_counts = [0 if math.isnan(x) else x for x in file_counts]
         ax2.bar(file_categories, file_counts)
         ax2.set_title('File Counts by Category')
         
@@ -230,6 +248,12 @@ class CleanerGUI:
         
         messagebox.showinfo("Success", "Selected items have been backed up")
     
+    def on_close(self):
+        # 如有后台线程，可在此安全终止
+        self.window.destroy()
+    
     def run(self):
         """运行应用程序"""
         self.window.mainloop()
+
+__all__ = ['CleanerGUI']

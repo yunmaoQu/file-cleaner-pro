@@ -3,6 +3,7 @@ import logging
 import logging.config
 from datetime import datetime
 import hashlib
+import filetype
 
 def setup_logging(config):
     """设置日志系统"""
@@ -61,8 +62,8 @@ def safe_remove(file_path):
 
 def get_mime_type(file_path):
     """获取文件MIME类型"""
-    import magic
-    try:
-        return magic.from_file(file_path, mime=True)
-    except Exception:
-        return None
+    kind = filetype.guess(file_path)
+    if kind is not None:
+        return kind.mime
+    else:
+        return "unknown"

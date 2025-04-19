@@ -1,10 +1,11 @@
-import os
 import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 from models import AIModels
-from file_scanner import FileScanner
-from file_optimizer import FileOptimizer
-from file_advisor import FileAdvisor
-from gui import CleanerGUI
+from core.file_scanner import FileScanner
+from core.file_optimizer import FileOptimizer
+from core.file_advisor import FileAdvisor
+from cleaner_gui import CleanerGUI
 
 class FileCleanerApp:
     def __init__(self):

@@ -1,7 +1,90 @@
-
-
-
 # File Cleaner Pro
+
+## Introduction
+File Cleaner Pro is an AI-powered file management and cleaning tool. It helps you find duplicate, large, and old files, optimize images, backup important data, and manage your storage efficiently with a modern GUI.
+
+## Quick Start
+
+### Local Run
+1. Install Python 3.10 or higher.
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Start the application:
+   ```bash
+   python main.py
+   ```
+
+### Docker Run
+1. Build the image:
+   ```bash
+   docker build -t file-cleaner-pro .
+   ```
+2. Run the container:
+   ```bash
+   docker run -it --rm \
+     -e DISPLAY=$DISPLAY \
+     -v /tmp/.X11-unix:/tmp/.X11-unix \
+     -v /your/data/path:/data \
+     file-cleaner-pro
+   ```
+   > For GUI in Windows/Mac, use VNC or X11 forwarding.
+
+## Release
+- Version: v1.0.0
+- Platforms: Windows / Linux / Mac (GUI recommended for local, Docker for CLI/server)
+- Main Features:
+  - Smart scan for duplicate/large/old files
+  - AI-based file importance analysis
+  - Image compression and optimization
+  - One-click backup and cleaning
+  - Modern graphical interface
+
+## Usage
+
+### GUI
+1. Launch the app
+2. Select a directory to scan
+3. Choose scan options
+4. View and manage results
+5. Apply recommended optimizations
+
+### CLI (if supported)
+```bash
+python main.py --help
+```
+
+## Build & Release
+
+### Build Standalone Executable (Windows example)
+```bash
+pip install pyinstaller
+pyinstaller --onefile --windowed main.py
+# The binary will be in dist/main.exe
+```
+
+### Publish to PyPI
+1. Edit `setup.py` and `setup.cfg` as needed.
+2. Build and upload:
+   ```bash
+   python setup.py sdist bdist_wheel
+   twine upload dist/*
+   ```
+
+## FAQ
+- **GUI not showing in Docker?**
+  - Use X11 or VNC, or run locally.
+- **Scan/optimize errors?**
+  - Check dependencies, Python version, file permissions.
+- **Supported file types?**
+  - Image optimization supports jpg/jpeg/png. Other types are not auto-optimized.
+
+## Contributing
+Pull requests and issues are welcome! See CONTRIBUTING.md for details.
+
+## License
+MIT License. See LICENSE for details.
 
 An AI-powered file management and cleaning tool that helps you organize, optimize, and maintain your files efficiently.
 

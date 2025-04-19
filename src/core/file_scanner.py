@@ -1,7 +1,7 @@
 import os
 import hashlib
 from datetime import datetime
-import magic  # 用于文件类型检测
+import filetype  # 用于文件类型检测
 
 class FileScanner:
     def __init__(self, ai_models):
@@ -42,7 +42,11 @@ class FileScanner:
                     # 获取文件基本信息
                     file_size = os.path.getsize(file_path)
                     file_extension = os.path.splitext(filename)[1].lower()
-                    file_type = magic.from_file(file_path, mime=True)
+                    kind = filetype.guess(file_path)
+                    if kind is not None:
+                        file_type = kind.mime
+                    else:
+                        file_type = "unknown"
                     
                     # 分类文件
                     self.classify_file(file_path, file_extension, results)

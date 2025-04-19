@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import numpy as np
 
 class FileAdvisor:
     def __init__(self, ai_models):
@@ -25,7 +26,11 @@ class FileAdvisor:
             ]
             
             # 使用AI模型预测重要性
-            importance_score = self.ai_models.importance_model.predict([features])[0][0]
+            features_np = np.array([features])
+            importance_score = self.ai_models.importance_model.predict(features_np)[0][0]
+            # 检查 NaN
+            if np.isnan(importance_score):
+                importance_score = 0.0
             
             # 确定重要性级别
             importance_level = 'low'

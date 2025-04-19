@@ -1,7 +1,7 @@
 import os
 import shutil
 import hashlib
-import magic
+import filetype
 import logging
 from typing import List, Dict, Any
 from datetime import datetime
@@ -27,7 +27,11 @@ class FileUtils:
     def get_file_type(file_path: str) -> str:
         """获取文件MIME类型"""
         try:
-            return magic.from_file(file_path, mime=True)
+            kind = filetype.guess(file_path)
+            if kind is not None:
+                return kind.mime
+            else:
+                return "unknown"
         except Exception:
             return "application/octet-stream"
             
