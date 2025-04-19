@@ -10,36 +10,36 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false # 可选: 如果一个 Python 版本测试失败，不取消其他版本的测试
+      fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12'] # 增加了 3.12
+        python-version: ['3.10', '3.11', '3.12']
 
     steps:
-    - uses: actions/checkout@v4 # 更新版本
+    - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5 # 更新版本
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        cache: 'pip' # 启用 pip 缓存
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-tk
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        # 如果有测试特定依赖，例如在 requirements-dev.txt:
-        # pip install -r requirements-dev.txt
 
     - name: Run tests
       run: |
         pytest tests/ --cov=src --cov-report=xml
 
-    # Optional: Upload coverage if you use codecov
+    # 可选：上传覆盖率报告
     # - name: Upload coverage
-    #   uses: codecov/codecov-action@v4 # 更新版本
+    #   uses: codecov/codecov-action@v4
     #   with:
-    #     token: ${{ secrets.CODECOV_TOKEN }} # 如果是私有仓库或需要特定配置，可能需要 token
+    #     token: ${{ secrets.CODECOV_TOKEN }}
     #     file: ./coverage.xml
-    #     flags: unittests # 可选：为覆盖率报告打标签
-    #     name: codecov-umbrella # 可选：覆盖率报告的名称
-    #     fail_ci_if_error: true # 可选：如果上传失败，则 CI 失败
