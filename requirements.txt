@@ -10,7 +10,7 @@ xxhash>=2.0.0
 schedule>=1.1.0
 
 # GUI依赖
-tkinter  # 通常随Python安装
+# tkinter 是Python标准库的一部分，不需要通过pip安装
 PyQt5>=5.15.0  # 可选的GUI后端
 
 # 开发依赖
