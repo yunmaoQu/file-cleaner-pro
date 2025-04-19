@@ -2,14 +2,27 @@ import unittest
 import os
 import shutil
 import tempfile
-from src.core.scanner import FileScanner
+from src.core.file_scanner import FileScanner
 from src.core.threaded_scanner import ThreadedScanner
+
+# 创建一个AI模型的模拟对象
+class MockAIModels:
+    def __init__(self):
+        self.importance_model = None
+        self.duplicate_model = None
+        
+    def predict_importance(self, file_info):
+        return 0.5  # 返回一个固定的重要性得分
+        
+    def predict_duplicates(self, file1, file2):
+        return 0.8  # 返回一个固定的相似度得分
 
 class TestScanner(unittest.TestCase):
     def setUp(self):
         """测试前创建临时测试目录和文件"""
         self.test_dir = tempfile.mkdtemp()
-        self.scanner = FileScanner()
+        self.ai_models = MockAIModels()
+        self.scanner = FileScanner(self.ai_models)
         self.threaded_scanner = ThreadedScanner(self.scanner)
         
         # 创建测试文件

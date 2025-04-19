@@ -1,7 +1,9 @@
 import unittest
 import os
 import tempfile
-from src.core.recovery import FileRecovery
+import shutil
+from src.core.file_recovery import FileRecovery
+from datetime import datetime, timedelta
 
 class TestRecovery(unittest.TestCase):
     def setUp(self):
@@ -69,9 +71,15 @@ class TestRecovery(unittest.TestCase):
         # 创建备份
         backup_path = self.recovery.backup_before_delete(self.test_file_path)
         
-        # 修改备份时间为31天前
-        backup_time = os.path.getctime(backup_path)
-        os.utime(backup_path, (backup_time - 31*24*3600, backup_time - 31*24*3600))
+        # 直接修改备份时间戳记录
+        original_path = self.test_file_path
+        if original_path in self.recovery.deleted_files:
+            # 计算31天前的日期
+            old_date = datetime.now() - timedelta(days=31)
+            self.recovery.deleted_files[original_path]['timestamp'] = old_date.strftime('%Y%m%d_%H%M%S')
+            
+        # 保存修改后的记录
+        self.recovery.save_recovery_log()
         
         # 清理旧备份
         deleted_count = self.recovery.cleanup_old_backups(days=30)

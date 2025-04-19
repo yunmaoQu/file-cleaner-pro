@@ -109,6 +109,9 @@ BACKUP_CONFIG = {
     'backup_interval': 24 * 60 * 60,  # 24小时
     'retention_period': 30 * 24 * 60 * 60,  # 30天
     'min_free_space': 10 * 1024 * 1024 * 1024,  # 10GB
+    'max_backup_size': 1024 * 1024 * 1024 * 10,  # 10GB
+    'keep_backups': 30,  # 保留30天的备份
+    'max_workers': 4,  # 最大工作线程数
     'exclude_patterns': [
         '*.tmp',
         '*.temp',

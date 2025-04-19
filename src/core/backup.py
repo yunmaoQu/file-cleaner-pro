@@ -10,9 +10,9 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Any
 
-from config.settings import BACKUP_CONFIG
-from src.utils.file_utils import get_file_size, create_zip_file
-from src.utils.system_utils import get_system_info
+from src.config.settings import BACKUP_CONFIG
+from src.utils.file_utils import FileUtils
+from src.utils.system_utils import SystemUtils
 
 class AutoBackup:
     def __init__(self, backup_dir: str):
@@ -79,7 +79,7 @@ class AutoBackup:
             # 如果启用压缩
             if BACKUP_CONFIG['compression']:
                 zip_path = str(backup_path) + '.zip'
-                create_zip_file(str(backup_path), zip_path)
+                FileUtils.create_zip_file(str(backup_path), zip_path)
                 shutil.rmtree(str(backup_path))
                 backup_path = Path(zip_path)
 
@@ -87,11 +87,11 @@ class AutoBackup:
             backup_info = {
                 'name': backup_name,
                 'timestamp': timestamp,
-                'size': get_file_size(str(backup_path)),
+                'size': FileUtils.get_file_info(str(backup_path))['size'],
                 'files_count': len(files_to_backup),
                 'compressed': BACKUP_CONFIG['compression'],
                 'path': str(backup_path),
-                'system_info': get_system_info()
+                'system_info': SystemUtils.get_system_info()
             }
             
             self.backup_history['backups'].append(backup_info)
@@ -118,21 +118,51 @@ class AutoBackup:
                 schedule.run_pending()
                 time.sleep(60)
 
+        # 确保停止旧的备份任务
+        self.stop_auto_backup()
+        
+        # 重置停止标志
+        self.stop_flag.clear()
+        
         # 设置定时任务
         interval_hours = BACKUP_CONFIG['backup_interval'] // 3600
         schedule.every(interval_hours).hours.do(backup_job)
 
         # 启动备份线程
-        self.backup_thread = threading.Thread(target=run_schedule)
-        self.backup_thread.daemon = True
+        self.backup_thread = threading.Thread(
+            target=run_schedule, 
+            name="backup_scheduler",
+            daemon=True
+        )
         self.backup_thread.start()
+        self.logger.info("Auto backup started")
 
     def stop_auto_backup(self):
         """停止自动备份"""
+        if not self.backup_thread or not self.backup_thread.is_alive():
+            self.logger.info("No active backup thread to stop")
+            return
+            
+        self.logger.info(f"Stopping auto backup thread: {self.backup_thread.name}...")
         self.stop_flag.set()
-        if self.backup_thread:
-            self.backup_thread.join()
+        
+        # 给线程一个合理的时间来终止
+        try:
+            self.logger.info("Waiting for backup thread to terminate...")
+            self.backup_thread.join(timeout=2.0)  # 等待最多2秒
+            if self.backup_thread.is_alive():
+                self.logger.warning(f"Backup thread {self.backup_thread.name} did not terminate gracefully")
+                print(f"WARNING: Backup thread {self.backup_thread.name} is still alive after timeout")
+            else:
+                self.logger.info("Backup thread terminated successfully")
+        except Exception as e:
+            self.logger.error(f"Error while stopping backup thread: {e}")
+            print(f"Error stopping backup thread: {e}")
+            
+        # 清除所有定时任务
+        self.logger.info("Clearing scheduled tasks...")
         schedule.clear()
+        self.logger.info("Auto backup stopped")
 
     def restore_backup(self, backup_name: str, restore_path: str) -> bool:
         """从备份恢复文件"""
@@ -175,11 +205,14 @@ class AutoBackup:
             return False
 
     def cleanup_old_backups(self):
-        
         """清理旧的备份"""
         try:
             current_time = datetime.now()
             keep_days = BACKUP_CONFIG['keep_backups']
+            
+            # 打印调试信息
+            self.logger.debug(f"Cleaning up backups older than {keep_days} days")
+            self.logger.debug(f"Current time: {current_time}")
             
             # 筛选需要删除的备份
             backups_to_remove = []
@@ -187,7 +220,12 @@ class AutoBackup:
             
             for backup in self.backup_history['backups']:
                 backup_time = datetime.strptime(backup['timestamp'], '%Y%m%d_%H%M%S')
-                if (current_time - backup_time).days > keep_days:
+                delta_days = (current_time - backup_time).days
+                
+                self.logger.debug(f"Backup: {backup['name']}, Date: {backup_time}, Age: {delta_days} days")
+                
+                if delta_days > keep_days:
+                    self.logger.debug(f"Marking for removal: {backup['name']}")
                     backups_to_remove.append(backup)
                 else:
                     remaining_backups.append(backup)
@@ -195,6 +233,8 @@ class AutoBackup:
             # 删除旧备份
             for backup in backups_to_remove:
                 backup_path = Path(backup['path'])
+                self.logger.debug(f"Removing backup: {backup_path}")
+                
                 if backup_path.exists():
                     if backup_path.is_dir():
                         shutil.rmtree(str(backup_path))
@@ -205,6 +245,7 @@ class AutoBackup:
             self.backup_history['backups'] = remaining_backups
             self._save_backup_history()
             
+            self.logger.info(f"Removed {len(backups_to_remove)} old backups")
             return len(backups_to_remove)
             
         except Exception as e:
