@@ -6,6 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import math
 import time
 import threading
+import shutil
 
 class CleanerGUI:
     def __init__(self, scanner, optimizer, advisor):
