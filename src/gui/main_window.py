@@ -121,7 +121,7 @@ class MainWindow:
     def show_documentation(self):
         """显示文档"""
         import webbrowser
-        webbrowser.open("https://github.com/yourusername/file_cleaner/docs")
+        webbrowser.open("https://github.com/yunmaoQu/file-cleaner-pro/README.md")
         
     def run(self):
         """运行应用程序"""
