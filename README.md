@@ -3,7 +3,6 @@
 ## Introduction
 File Cleaner Pro is an AI-powered file management and cleaning tool. It helps you find duplicate, large, and old files, optimize images, backup important data, and manage your storage efficiently with a modern GUI.
 
----
 
 ## Features
 
@@ -18,13 +17,6 @@ File Cleaner Pro is an AI-powered file management and cleaning tool. It helps yo
 - **🖥️ User-friendly GUI**  
   Modern interface, real-time progress, secure deletion
 
----
-
-## Screenshots
-
-> _You can add screenshots here to showcase the GUI and features!_
-
----
 
 ## Quick Start
 
@@ -73,8 +65,6 @@ pyinstaller --onefile --windowed main.py
    twine upload dist/*
    ```
 
----
-
 ## Usage
 
 ### GUI
@@ -89,7 +79,6 @@ pyinstaller --onefile --windowed main.py
 python main.py --help
 ```
 
----
 
 ## Project Structure
 
@@ -109,7 +98,6 @@ file-cleaner-pro/
 └── README.md
 ```
 
----
 
 ## Configuration
 
@@ -127,7 +115,6 @@ file-cleaner-pro/
   export BACKUP_ENABLED=True
   ```
 
----
 
 ## FAQ
 
